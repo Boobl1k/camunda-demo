@@ -1,0 +1,615 @@
+{
+  "configuration" : {
+    "scope" : "SoftwareSystem"
+  },
+  "description" : "Description",
+  "documentation" : { },
+  "id" : 1,
+  "lastModifiedAgent" : "structurizr-ui",
+  "lastModifiedDate" : "2025-06-26T08:53:01Z",
+  "model" : {
+    "people" : [ {
+      "id" : "1",
+      "location" : "Unspecified",
+      "name" : "User",
+      "properties" : {
+        "structurizr.dsl.identifier" : "u"
+      },
+      "relationships" : [ {
+        "description" : "Запуск конвертации",
+        "destinationId" : "4",
+        "id" : "31",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Запуск конвертации",
+        "destinationId" : "3",
+        "id" : "32",
+        "linkedRelationshipId" : "31",
+        "sourceId" : "1"
+      }, {
+        "description" : "Запуск конвертации",
+        "destinationId" : "2",
+        "id" : "33",
+        "linkedRelationshipId" : "31",
+        "sourceId" : "1"
+      }, {
+        "description" : "Ввод OTP",
+        "destinationId" : "9",
+        "id" : "34",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "containers" : [ {
+        "components" : [ {
+          "documentation" : { },
+          "id" : "4",
+          "name" : "REST API",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.be.rest"
+          },
+          "relationships" : [ {
+            "description" : "Запуск процесса",
+            "destinationId" : "5",
+            "id" : "13",
+            "sourceId" : "4",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Предоставление информации по конвертациям",
+            "destinationId" : "1",
+            "id" : "35",
+            "sourceId" : "4",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "documentation" : { },
+          "id" : "5",
+          "name" : "Camunda",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.be.cam"
+          },
+          "relationships" : [ {
+            "description" : "Расчет транзакции",
+            "destinationId" : "7",
+            "id" : "16",
+            "sourceId" : "5",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Проверка лимитов",
+            "destinationId" : "8",
+            "id" : "18",
+            "sourceId" : "5",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Запрос на создание OTP",
+            "destinationId" : "9",
+            "id" : "20",
+            "sourceId" : "5",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Дебетование исходного счета",
+            "destinationId" : "10",
+            "id" : "26",
+            "sourceId" : "5",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Кредитование целевого счета",
+            "destinationId" : "10",
+            "id" : "28",
+            "sourceId" : "5",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Чтение и запись",
+            "destinationId" : "11",
+            "id" : "29",
+            "sourceId" : "5",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component,bpmn"
+        }, {
+          "documentation" : { },
+          "id" : "6",
+          "name" : "Kafka listener",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.be.kl"
+          },
+          "relationships" : [ {
+            "description" : "Получение результата OTP",
+            "destinationId" : "12",
+            "id" : "23",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Коррелирование результата OTP с процессом",
+            "destinationId" : "5",
+            "id" : "25",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component,kafka"
+        } ],
+        "documentation" : { },
+        "id" : "3",
+        "name" : "BPMN engine",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.be"
+        },
+        "relationships" : [ {
+          "description" : "Расчет транзакции",
+          "destinationId" : "7",
+          "id" : "17",
+          "linkedRelationshipId" : "16",
+          "sourceId" : "3"
+        }, {
+          "description" : "Проверка лимитов",
+          "destinationId" : "8",
+          "id" : "19",
+          "linkedRelationshipId" : "18",
+          "sourceId" : "3"
+        }, {
+          "description" : "Запрос на создание OTP",
+          "destinationId" : "9",
+          "id" : "21",
+          "linkedRelationshipId" : "20",
+          "sourceId" : "3"
+        }, {
+          "description" : "Получение результата OTP",
+          "destinationId" : "12",
+          "id" : "24",
+          "linkedRelationshipId" : "23",
+          "sourceId" : "3"
+        }, {
+          "description" : "Дебетование исходного счета",
+          "destinationId" : "10",
+          "id" : "27",
+          "linkedRelationshipId" : "26",
+          "sourceId" : "3"
+        }, {
+          "description" : "Чтение и запись",
+          "destinationId" : "11",
+          "id" : "30",
+          "linkedRelationshipId" : "29",
+          "sourceId" : "3"
+        }, {
+          "description" : "Предоставление информации по конвертациям",
+          "destinationId" : "1",
+          "id" : "36",
+          "linkedRelationshipId" : "35",
+          "sourceId" : "3"
+        } ],
+        "tags" : "Element,Container,bpmn"
+      }, {
+        "documentation" : { },
+        "id" : "7",
+        "name" : "Currency service",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.cs"
+        },
+        "relationships" : [ {
+          "description" : "Предоставление курса валют",
+          "destinationId" : "5",
+          "id" : "14",
+          "sourceId" : "7",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Предоставление курса валют",
+          "destinationId" : "3",
+          "id" : "15",
+          "linkedRelationshipId" : "14",
+          "sourceId" : "7"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "8",
+        "name" : "Limit reference service",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.ls"
+        },
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "9",
+        "name" : "OTP service",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.os"
+        },
+        "relationships" : [ {
+          "description" : "Запись результата по прохождению OTP",
+          "destinationId" : "12",
+          "id" : "22",
+          "sourceId" : "9",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "10",
+        "name" : "Account service",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.as"
+        },
+        "relationships" : [ {
+          "description" : "Предоставление информации по счетам",
+          "destinationId" : "1",
+          "id" : "38",
+          "sourceId" : "10",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "11",
+        "name" : "SQL database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.db"
+        },
+        "tags" : "Element,Container,Database"
+      }, {
+        "documentation" : { },
+        "id" : "12",
+        "name" : "Брокер сообщений",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.mb"
+        },
+        "tags" : "Element,Container,message broker"
+      } ],
+      "documentation" : { },
+      "id" : "2",
+      "location" : "Unspecified",
+      "name" : "Контур банка",
+      "properties" : {
+        "structurizr.dsl.identifier" : "ss"
+      },
+      "relationships" : [ {
+        "description" : "Предоставление информации по конвертациям",
+        "destinationId" : "1",
+        "id" : "37",
+        "linkedRelationshipId" : "35",
+        "sourceId" : "2"
+      } ],
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "Currency conversion",
+  "properties" : {
+    "structurizr.dsl" : "d29ya3NwYWNlICJDdXJyZW5jeSBjb252ZXJzaW9uIiB7CgogICAgIWlkZW50aWZpZXJzIGhpZXJhcmNoaWNhbAoKICAgIG1vZGVsIHsKICAgICAgICB1ID0gcGVyc29uICJVc2VyIgogICAgICAgIHNzID0gc29mdHdhcmVTeXN0ZW0gItCa0L7QvdGC0YPRgCDQsdCw0L3QutCwIiB7CiAgICAgICAgICAgIGJlID0gY29udGFpbmVyICJCUE1OIGVuZ2luZSIgewogICAgICAgICAgICAgICAgdGFncyAiYnBtbiIKICAgICAgICAgICAgICAgIHJlc3QgPSBjb21wb25lbnQgIlJFU1QgQVBJIgogICAgICAgICAgICAgICAgY2FtID0gY29tcG9uZW50IENhbXVuZGEgewogICAgICAgICAgICAgICAgICAgIHRhZ3MgImJwbW4iCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBrbCA9IGNvbXBvbmVudCAiS2Fma2EgbGlzdGVuZXIiIHsKICAgICAgICAgICAgICAgICAgICB0YWdzICJrYWZrYSIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgICAgICBjcyA9IGNvbnRhaW5lciAiQ3VycmVuY3kgc2VydmljZSIKICAgICAgICAgICAgbHMgPSBjb250YWluZXIgIkxpbWl0IHJlZmVyZW5jZSBzZXJ2aWNlIgogICAgICAgICAgICBvcyA9IGNvbnRhaW5lciAiT1RQIHNlcnZpY2UiCiAgICAgICAgICAgIGFzID0gY29udGFpbmVyICJBY2NvdW50IHNlcnZpY2UiCiAgICAgICAgICAgIGRiID0gY29udGFpbmVyICJTUUwgZGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICB9CiAgICAgICAgICAgIG1iID0gY29udGFpbmVyICLQkdGA0L7QutC10YAg0YHQvtC+0LHRidC10L3QuNC5IiB7CiAgICAgICAgICAgICAgICB0YWdzICJtZXNzYWdlIGJyb2tlciIKICAgICAgICAgICAgfQoKCiAgICAgICAgICAgIGJlLnJlc3QgLT4gYmUuY2FtICLQl9Cw0L/Rg9GB0Log0L/RgNC+0YbQtdGB0YHQsCIKICAgICAgICAgICAgY3MgLT4gYmUuY2FtICLQn9GA0LXQtNC+0YHRgtCw0LLQu9C10L3QuNC1INC60YPRgNGB0LAg0LLQsNC70Y7RgiIKICAgICAgICAgICAgYmUuY2FtIC0+IGNzICLQoNCw0YHRh9C10YIg0YLRgNCw0L3Qt9Cw0LrRhtC40LgiCiAgICAgICAgICAgIGJlLmNhbSAtPiBscyAi0J/RgNC+0LLQtdGA0LrQsCDQu9C40LzQuNGC0L7QsiIKICAgICAgICAgICAgYmUuY2FtIC0+IHNzLm9zICLQl9Cw0L/RgNC+0YEg0L3QsCDRgdC+0LfQtNCw0L3QuNC1IE9UUCIKICAgICAgICAgICAgb3MgLT4gbWIgItCX0LDQv9C40YHRjCDRgNC10LfRg9C70YzRgtCw0YLQsCDQv9C+INC/0YDQvtGF0L7QttC00LXQvdC40Y4gT1RQIgogICAgICAgICAgICBiZS5rbCAtPiBtYiAi0J/QvtC70YPRh9C10L3QuNC1INGA0LXQt9GD0LvRjNGC0LDRgtCwIE9UUCIKICAgICAgICAgICAgYmUua2wgLT4gYmUuY2FtICLQmtC+0YDRgNC10LvQuNGA0L7QstCw0L3QuNC1INGA0LXQt9GD0LvRjNGC0LDRgtCwIE9UUCDRgSDQv9GA0L7RhtC10YHRgdC+0LwiCiAgICAgICAgICAgIGJlLmNhbSAtPiBhcyAi0JTQtdCx0LXRgtC+0LLQsNC90LjQtSDQuNGB0YXQvtC00L3QvtCz0L4g0YHRh9C10YLQsCIKICAgICAgICAgICAgYmUuY2FtIC0+IGFzICLQmtGA0LXQtNC40YLQvtCy0LDQvdC40LUg0YbQtdC70LXQstC+0LPQviDRgdGH0LXRgtCwIgoKICAgICAgICAgICAgYmUuY2FtIC0+IGRiICLQp9GC0LXQvdC40LUg0Lgg0LfQsNC/0LjRgdGMIgogICAgICAgIH0KCiAgICAgICAgdSAtPiBzcy5iZS5yZXN0ICLQl9Cw0L/Rg9GB0Log0LrQvtC90LLQtdGA0YLQsNGG0LjQuCIKICAgICAgICB1IC0+IHNzLm9zICLQktCy0L7QtCBPVFAiCgogICAgICAgIHNzLmJlLnJlc3QgLT4gdSAi0J/RgNC10LTQvtGB0YLQsNCy0LvQtdC90LjQtSDQuNC90YTQvtGA0LzQsNGG0LjQuCDQv9C+INC60L7QvdCy0LXRgNGC0LDRhtC40Y/QvCIKICAgICAgICBzcy5hcyAtPiB1ICLQn9GA0LXQtNC+0YHRgtCw0LLQu9C10L3QuNC1INC40L3RhNC+0YDQvNCw0YbQuNC4INC/0L4g0YHRh9C10YLQsNC8IgogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBzeXN0ZW1Db250ZXh0IHNzIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9sYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgIGNvbnRhaW5lciBzcyB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhbmltYXRpb24gewogICAgICAgICAgICAgICAgdQogICAgICAgICAgICAgICAgc3MuYmUKICAgICAgICAgICAgICAgIHNzLmRiCiAgICAgICAgICAgICAgICBzcy5jcwogICAgICAgICAgICAgICAgc3MubHMKICAgICAgICAgICAgICAgIHNzLm1iCiAgICAgICAgICAgICAgICBzcy5vcwogICAgICAgICAgICAgICAgc3MuYXMKICAgICAgICAgICAgfQogICAgICAgIH0KCiAgICAgICAgY29tcG9uZW50IHNzLmJlIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGFuaW1hdGlvbiB7CiAgICAgICAgICAgICAgICB1CiAgICAgICAgICAgICAgICBzcy5iZS5yZXN0CiAgICAgICAgICAgICAgICBzcy5iZS5jYW0KICAgICAgICAgICAgICAgIHNzLmRiCiAgICAgICAgICAgICAgICBzcy5jcwogICAgICAgICAgICAgICAgc3MubHMKICAgICAgICAgICAgICAgIHNzLm9zCiAgICAgICAgICAgICAgICBzcy5iZS5rbAogICAgICAgICAgICAgICAgc3MubWIKICAgICAgICAgICAgICAgIHNzLmFzCiAgICAgICAgICAgIH0KICAgICAgICB9CgogICAgICAgIHN0eWxlcyB7CiAgICAgICAgICAgIGVsZW1lbnQgIkVsZW1lbnQiIHsKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJQZXJzb24iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzhCODAwMAogICAgICAgICAgICAgICAgc2hhcGUgcGVyc29uCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiU29mdHdhcmUgU3lzdGVtIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICNhNjIzMjMKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJDb250YWluZXIiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzlhMjhmOAogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkRhdGFiYXNlIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBjeWxpbmRlcgogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjOGY4MDVhCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQ29tcG9uZW50IiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICMwMDAwOEIKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJtZXNzYWdlIGJyb2tlciIgewogICAgICAgICAgICAgICAgc2hhcGUgcGlwZQogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjOGY4MDVhCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAia2Fma2EiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzhmODA1YQogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgImJwbW4iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2IzNGQ0ZAogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQoKICAgIGNvbmZpZ3VyYXRpb24gewogICAgICAgIHNjb3BlIHNvZnR3YXJlc3lzdGVtCiAgICB9Cgp9"
+  },
+  "views" : {
+    "componentViews" : [ {
+      "animations" : [ {
+        "elements" : [ "1" ],
+        "order" : 1
+      }, {
+        "elements" : [ "4" ],
+        "order" : 2,
+        "relationships" : [ "31", "35" ]
+      }, {
+        "elements" : [ "5" ],
+        "order" : 3,
+        "relationships" : [ "13" ]
+      }, {
+        "elements" : [ "11" ],
+        "order" : 4,
+        "relationships" : [ "29" ]
+      }, {
+        "elements" : [ "7" ],
+        "order" : 5,
+        "relationships" : [ "14", "16" ]
+      }, {
+        "elements" : [ "8" ],
+        "order" : 6,
+        "relationships" : [ "18" ]
+      }, {
+        "elements" : [ "9" ],
+        "order" : 7,
+        "relationships" : [ "20", "34" ]
+      }, {
+        "elements" : [ "6" ],
+        "order" : 8,
+        "relationships" : [ "25" ]
+      }, {
+        "elements" : [ "12" ],
+        "order" : 9,
+        "relationships" : [ "22", "23" ]
+      }, {
+        "elements" : [ "10" ],
+        "order" : 10,
+        "relationships" : [ "26", "28", "38" ]
+      } ],
+      "containerId" : "3",
+      "dimensions" : {
+        "height" : 2480,
+        "width" : 3508
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 1681,
+        "y" : 44
+      }, {
+        "id" : "4",
+        "x" : 1123,
+        "y" : 670
+      }, {
+        "id" : "5",
+        "x" : 1123,
+        "y" : 1185
+      }, {
+        "id" : "6",
+        "x" : 1123,
+        "y" : 1745
+      }, {
+        "id" : "7",
+        "x" : 2753,
+        "y" : 950
+      }, {
+        "id" : "8",
+        "x" : 2716,
+        "y" : 1492
+      }, {
+        "id" : "9",
+        "x" : 2716,
+        "y" : 1492
+      }, {
+        "id" : "10",
+        "x" : 2723,
+        "y" : 275
+      }, {
+        "id" : "11",
+        "x" : 303,
+        "y" : 1006
+      }, {
+        "id" : "12",
+        "x" : 1908,
+        "y" : 2066
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "generatedKey" : true,
+      "key" : "Component-001",
+      "order" : 3,
+      "paperSize" : "A4_Landscape",
+      "relationships" : [ {
+        "id" : "13"
+      }, {
+        "id" : "14",
+        "vertices" : [ {
+          "x" : 2178,
+          "y" : 1295
+        } ]
+      }, {
+        "id" : "16",
+        "vertices" : [ {
+          "x" : 2158,
+          "y" : 1140
+        } ]
+      }, {
+        "id" : "18"
+      }, {
+        "id" : "20"
+      }, {
+        "id" : "22"
+      }, {
+        "id" : "23"
+      }, {
+        "id" : "25"
+      }, {
+        "id" : "26",
+        "vertices" : [ {
+          "x" : 2133,
+          "y" : 935
+        } ]
+      }, {
+        "id" : "28",
+        "vertices" : [ {
+          "x" : 2028,
+          "y" : 800
+        } ]
+      }, {
+        "id" : "29"
+      }, {
+        "id" : "31",
+        "vertices" : [ {
+          "x" : 1368,
+          "y" : 395
+        } ]
+      }, {
+        "id" : "34"
+      }, {
+        "id" : "35"
+      }, {
+        "id" : "38"
+      } ]
+    } ],
+    "configuration" : {
+      "branding" : { },
+      "lastSavedView" : "Container-001",
+      "metadataSymbols" : "SquareBrackets",
+      "styles" : {
+        "elements" : [ {
+          "color" : "#ffffff",
+          "tag" : "Element"
+        }, {
+          "background" : "#8b8000",
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#a62323",
+          "tag" : "Software System"
+        }, {
+          "background" : "#9a28f8",
+          "tag" : "Container"
+        }, {
+          "background" : "#8f805a",
+          "shape" : "Cylinder",
+          "tag" : "Database"
+        }, {
+          "background" : "#00008b",
+          "tag" : "Component"
+        }, {
+          "background" : "#8f805a",
+          "shape" : "Pipe",
+          "tag" : "message broker"
+        }, {
+          "background" : "#8f805a",
+          "tag" : "kafka"
+        }, {
+          "background" : "#b34d4d",
+          "tag" : "bpmn"
+        } ]
+      },
+      "terminology" : { }
+    },
+    "containerViews" : [ {
+      "animations" : [ {
+        "elements" : [ "1" ],
+        "order" : 1
+      }, {
+        "elements" : [ "3" ],
+        "order" : 2,
+        "relationships" : [ "32", "36" ]
+      }, {
+        "elements" : [ "11" ],
+        "order" : 3,
+        "relationships" : [ "30" ]
+      }, {
+        "elements" : [ "7" ],
+        "order" : 4,
+        "relationships" : [ "15", "17" ]
+      }, {
+        "elements" : [ "8" ],
+        "order" : 5,
+        "relationships" : [ "19" ]
+      }, {
+        "elements" : [ "12" ],
+        "order" : 6,
+        "relationships" : [ "24" ]
+      }, {
+        "elements" : [ "9" ],
+        "order" : 7,
+        "relationships" : [ "21", "22", "34" ]
+      }, {
+        "elements" : [ "10" ],
+        "order" : 8,
+        "relationships" : [ "27", "38" ]
+      } ],
+      "dimensions" : {
+        "height" : 2480,
+        "width" : 3508
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 1550,
+        "y" : 47
+      }, {
+        "id" : "3",
+        "x" : 1531,
+        "y" : 1074
+      }, {
+        "id" : "7",
+        "x" : 321,
+        "y" : 1099
+      }, {
+        "id" : "8",
+        "x" : 735,
+        "y" : 1722
+      }, {
+        "id" : "9",
+        "x" : 2735,
+        "y" : 1082
+      }, {
+        "id" : "10",
+        "x" : 740,
+        "y" : 517
+      }, {
+        "id" : "11",
+        "x" : 1535,
+        "y" : 1972
+      }, {
+        "id" : "12",
+        "x" : 2335,
+        "y" : 1742
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "generatedKey" : true,
+      "key" : "Container-001",
+      "order" : 2,
+      "paperSize" : "A4_Landscape",
+      "relationships" : [ {
+        "id" : "15",
+        "vertices" : [ {
+          "x" : 1101,
+          "y" : 1324
+        } ]
+      }, {
+        "id" : "17",
+        "vertices" : [ {
+          "x" : 1101,
+          "y" : 1044
+        } ]
+      }, {
+        "id" : "19"
+      }, {
+        "id" : "21"
+      }, {
+        "id" : "22"
+      }, {
+        "id" : "24"
+      }, {
+        "id" : "27"
+      }, {
+        "id" : "30"
+      }, {
+        "id" : "32",
+        "vertices" : [ {
+          "x" : 1636,
+          "y" : 729
+        } ]
+      }, {
+        "id" : "34"
+      }, {
+        "id" : "36",
+        "vertices" : [ {
+          "x" : 1906,
+          "y" : 739
+        } ]
+      }, {
+        "id" : "38"
+      } ],
+      "softwareSystemId" : "2"
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "generatedKey" : true,
+      "key" : "SystemContext-001",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "33"
+      }, {
+        "id" : "37"
+      } ],
+      "softwareSystemId" : "2"
+    } ]
+  }
+}

@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_05v6w9b" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.28.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.22.0">
+  <bpmn:process id="CurrencyExchange" name="Обмен валют" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0t36rkq</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0t36rkq" sourceRef="StartEvent_1" targetRef="CheckingExchangeRate" />
+    <bpmn:serviceTask id="CheckingExchangeRate" name="Проверка курса валют" camunda:asyncBefore="true" camunda:delegateExpression="${checkingExchangeRateDelegate}">
+      <bpmn:incoming>Flow_0t36rkq</bpmn:incoming>
+      <bpmn:outgoing>Flow_074ffsz</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:boundaryEvent id="Event_1e91foj" attachedToRef="CheckingExchangeRate">
+      <bpmn:outgoing>Flow_1mmubyk</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_05x5lb1" />
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="SendingFailureResult" name="Сообщение результата об ошибке" camunda:asyncBefore="true" camunda:delegateExpression="${sendingFailureResultDelegate}">
+      <bpmn:incoming>Flow_1076l1x</bpmn:incoming>
+      <bpmn:outgoing>Flow_1vo1ayo</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1mmubyk" name="Некорректный курс" sourceRef="Event_1e91foj" targetRef="Gateway_1b6l9v6" />
+    <bpmn:endEvent id="Event_0e39cve">
+      <bpmn:incoming>Flow_1vo1ayo</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="TransactionCalculation" name="Расчет транзакции" camunda:asyncBefore="true" camunda:delegateExpression="${transactionCalculationDelegate}">
+      <bpmn:incoming>Flow_074ffsz</bpmn:incoming>
+      <bpmn:outgoing>Flow_08gqyck</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_074ffsz" sourceRef="CheckingExchangeRate" targetRef="TransactionCalculation" />
+    <bpmn:serviceTask id="CheckingLimits" name="Проверка лимитов" camunda:asyncBefore="true" camunda:delegateExpression="${checkingLimitsDelegate}">
+      <bpmn:incoming>Flow_08gqyck</bpmn:incoming>
+      <bpmn:outgoing>Flow_1891o73</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_08gqyck" sourceRef="TransactionCalculation" targetRef="CheckingLimits" />
+    <bpmn:boundaryEvent id="Event_19sjs7y" attachedToRef="CheckingLimits">
+      <bpmn:outgoing>Flow_0bntgpy</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1czk0r6" />
+    </bpmn:boundaryEvent>
+    <bpmn:exclusiveGateway id="Gateway_1b6l9v6">
+      <bpmn:incoming>Flow_1mmubyk</bpmn:incoming>
+      <bpmn:incoming>Flow_0bntgpy</bpmn:incoming>
+      <bpmn:incoming>Flow_1g4vi0x</bpmn:incoming>
+      <bpmn:incoming>Flow_03jtwp8</bpmn:incoming>
+      <bpmn:incoming>Flow_05xrh0b</bpmn:incoming>
+      <bpmn:outgoing>Flow_1076l1x</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0bntgpy" name="Превышен лимит" sourceRef="Event_19sjs7y" targetRef="Gateway_1b6l9v6" />
+    <bpmn:sequenceFlow id="Flow_1076l1x" sourceRef="Gateway_1b6l9v6" targetRef="SendingFailureResult" />
+    <bpmn:sequenceFlow id="Flow_1vo1ayo" sourceRef="SendingFailureResult" targetRef="Event_0e39cve" />
+    <bpmn:sequenceFlow id="Flow_1891o73" sourceRef="CheckingLimits" targetRef="Activity_0gq3kmo" />
+    <bpmn:serviceTask id="SendingSuccessResult" name="Сообщение результата об успехе" camunda:asyncBefore="true" camunda:delegateExpression="${sendingSuccessResultDelegate}">
+      <bpmn:incoming>Flow_04sva2j</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cqvce9</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_0so4o8z">
+      <bpmn:incoming>Flow_0cqvce9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0cqvce9" sourceRef="SendingSuccessResult" targetRef="Event_0so4o8z" />
+    <bpmn:sequenceFlow id="Flow_04sva2j" name="Транзакция выполнена" sourceRef="Gateway_13lm28y" targetRef="SendingSuccessResult">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${transactionCompleted}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:subProcess id="TransactionHandlingSubprocess" camunda:asyncBefore="true" camunda:asyncAfter="true">
+      <bpmn:incoming>Flow_0ddmpfm</bpmn:incoming>
+      <bpmn:outgoing>Flow_1nwcelo</bpmn:outgoing>
+      <bpmn:startEvent id="Event_0f98eef">
+        <bpmn:outgoing>Flow_0dctqvl</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:serviceTask id="SourceDebit" name="Дебетование исходного счета" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:delegateExpression="${sourceDebitDelegate}">
+        <bpmn:incoming>Flow_0dctqvl</bpmn:incoming>
+        <bpmn:outgoing>Flow_1h6vusn</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="TargetCredit" name="Кредитование целевого счета" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:delegateExpression="${targetCreditDelegate}">
+        <bpmn:incoming>Flow_1h6vusn</bpmn:incoming>
+        <bpmn:outgoing>Flow_1nrjemq</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_1h6vusn" sourceRef="SourceDebit" targetRef="TargetCredit" />
+      <bpmn:endEvent id="Event_0l1ed20">
+        <bpmn:incoming>Flow_1nrjemq</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1nrjemq" sourceRef="TargetCredit" targetRef="Event_0l1ed20" />
+      <bpmn:sequenceFlow id="Flow_0dctqvl" sourceRef="Event_0f98eef" targetRef="SourceDebit" />
+      <bpmn:boundaryEvent id="Event_0khn1up" attachedToRef="SourceDebit">
+        <bpmn:compensateEventDefinition id="CompensateEventDefinition_095gp73" />
+      </bpmn:boundaryEvent>
+      <bpmn:serviceTask id="SourceDebitReversal" name="Сторнирование списания" isForCompensation="true" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:delegateExpression="${sourceDebitReversalDelegate}" />
+      <bpmn:boundaryEvent id="Event_09h6tdq" attachedToRef="TargetCredit">
+        <bpmn:outgoing>Flow_13xv37n</bpmn:outgoing>
+        <bpmn:errorEventDefinition id="ErrorEventDefinition_0o09tew" />
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Flow_13xv37n" sourceRef="Event_09h6tdq" targetRef="Event_0nlfe10" />
+      <bpmn:endEvent id="Event_0nlfe10" camunda:asyncBefore="true" camunda:asyncAfter="true">
+        <bpmn:incoming>Flow_13xv37n</bpmn:incoming>
+        <bpmn:compensateEventDefinition id="CompensateEventDefinition_0hyybkv" />
+      </bpmn:endEvent>
+      <bpmn:association id="Association_0qdl68i" associationDirection="One" sourceRef="Event_0khn1up" targetRef="SourceDebitReversal" />
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_1g4vi0x" name="Транзакция не выполнена" sourceRef="Gateway_13lm28y" targetRef="Gateway_1b6l9v6">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!transactionCompleted}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_13lm28y">
+      <bpmn:incoming>Flow_1nwcelo</bpmn:incoming>
+      <bpmn:outgoing>Flow_04sva2j</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1g4vi0x</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1nwcelo" sourceRef="TransactionHandlingSubprocess" targetRef="Gateway_13lm28y" />
+    <bpmn:eventBasedGateway id="OtpResultGateway">
+      <bpmn:incoming>Flow_1xj908d</bpmn:incoming>
+      <bpmn:outgoing>Flow_11re9jo</bpmn:outgoing>
+      <bpmn:outgoing>Flow_017747h</bpmn:outgoing>
+    </bpmn:eventBasedGateway>
+    <bpmn:intermediateCatchEvent id="OtpReceived" name="OTP отвечен">
+      <bpmn:incoming>Flow_11re9jo</bpmn:incoming>
+      <bpmn:outgoing>Flow_1cpsc7e</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1j85gg6" messageRef="Message_3fglgbu" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="OtpTimer" name="OTP не пройден за 5 минут">
+      <bpmn:incoming>Flow_017747h</bpmn:incoming>
+      <bpmn:outgoing>Flow_07ip8cp</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1rka8rp">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="Gateway_0izki6o">
+      <bpmn:incoming>Flow_1cpsc7e</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ddmpfm</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1awib1x</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="HandlingOtpFailure" name="Обработка ошибки OTP" camunda:asyncBefore="true" camunda:delegateExpression="${handlingOtpFailureDelegate}">
+      <bpmn:incoming>Flow_07ip8cp</bpmn:incoming>
+      <bpmn:incoming>Flow_1awib1x</bpmn:incoming>
+      <bpmn:outgoing>Flow_03jtwp8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0gq3kmo" name="Отправка OTP запроса" camunda:asyncBefore="true">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="url">${environment.getProperty('app.otp.client.url').concat('/api/v1/otp')}</camunda:inputParameter>
+            <camunda:inputParameter name="method">POST</camunda:inputParameter>
+            <camunda:inputParameter name="payload">${'{ "userId": "'.concat(currencyExchangeRequest.userId.toString()).concat( '" }')}</camunda:inputParameter>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Content-Type">application/json</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+            <camunda:outputParameter name="otpId">${S(response).prop("otpId").stringValue()}</camunda:outputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1891o73</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xj908d</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0ddmpfm" name="OTP пройден" sourceRef="Gateway_0izki6o" targetRef="TransactionHandlingSubprocess">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${otpResult.getSolved()}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1xj908d" sourceRef="Activity_0gq3kmo" targetRef="OtpResultGateway" />
+    <bpmn:sequenceFlow id="Flow_11re9jo" sourceRef="OtpResultGateway" targetRef="OtpReceived" />
+    <bpmn:sequenceFlow id="Flow_017747h" sourceRef="OtpResultGateway" targetRef="OtpTimer" />
+    <bpmn:sequenceFlow id="Flow_1cpsc7e" sourceRef="OtpReceived" targetRef="Gateway_0izki6o" />
+    <bpmn:sequenceFlow id="Flow_07ip8cp" sourceRef="OtpTimer" targetRef="HandlingOtpFailure" />
+    <bpmn:sequenceFlow id="Flow_1awib1x" name="OTP не пройден" sourceRef="Gateway_0izki6o" targetRef="HandlingOtpFailure">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!otpResult.getSolved()}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_03jtwp8" sourceRef="HandlingOtpFailure" targetRef="Gateway_1b6l9v6" />
+    <bpmn:boundaryEvent id="Event_0ika72a" attachedToRef="TransactionHandlingSubprocess">
+      <bpmn:outgoing>Flow_05xrh0b</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0p6czp9" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_05xrh0b" sourceRef="Event_0ika72a" targetRef="Gateway_1b6l9v6" />
+  </bpmn:process>
+  <bpmn:message id="TransactionResultMessage" name="TransactionResultMessage" />
+  <bpmn:message id="Message_3fglgbu" name="OtpResultMessage" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="CurrencyExchange">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="239" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0t9fip7_di" bpmnElement="CheckingExchangeRate">
+        <dc:Bounds x="280" y="217" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0a5lm8f_di" bpmnElement="SendingFailureResult">
+        <dc:Bounds x="2340" y="460" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0e39cve_di" bpmnElement="Event_0e39cve">
+        <dc:Bounds x="2532" y="482" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0nf4bn2_di" bpmnElement="TransactionCalculation">
+        <dc:Bounds x="450" y="217" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1bwuw2k_di" bpmnElement="CheckingLimits">
+        <dc:Bounds x="620" y="217" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1b6l9v6_di" bpmnElement="Gateway_1b6l9v6" isMarkerVisible="true">
+        <dc:Bounds x="2195" y="475" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_031gx0u_di" bpmnElement="SendingSuccessResult">
+        <dc:Bounds x="2340" y="217" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0so4o8z_di" bpmnElement="Event_0so4o8z">
+        <dc:Bounds x="2532" y="239" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1x9s3vj_di" bpmnElement="TransactionHandlingSubprocess" isExpanded="true">
+        <dc:Bounds x="1530" y="83" width="600" height="347" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0f98eef_di" bpmnElement="Event_0f98eef">
+        <dc:Bounds x="1582" y="165" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ewya6e_di" bpmnElement="SourceDebit">
+        <dc:Bounds x="1690" y="143" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0tr4b2f_di" bpmnElement="TargetCredit">
+        <dc:Bounds x="1860" y="143" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0l1ed20_di" bpmnElement="Event_0l1ed20">
+        <dc:Bounds x="2022" y="165" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_11av5dm_di" bpmnElement="SourceDebitReversal">
+        <dc:Bounds x="1710" y="293" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0nlfe10_di" bpmnElement="Event_0nlfe10">
+        <dc:Bounds x="2022" y="302" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_09h6tdq_di" bpmnElement="Event_09h6tdq">
+        <dc:Bounds x="1912" y="205" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0khn1up_di" bpmnElement="Event_0khn1up">
+        <dc:Bounds x="1742" y="205" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1h6vusn_di" bpmnElement="Flow_1h6vusn">
+        <di:waypoint x="1790" y="183" />
+        <di:waypoint x="1860" y="183" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nrjemq_di" bpmnElement="Flow_1nrjemq">
+        <di:waypoint x="1960" y="183" />
+        <di:waypoint x="2022" y="183" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0dctqvl_di" bpmnElement="Flow_0dctqvl">
+        <di:waypoint x="1618" y="183" />
+        <di:waypoint x="1690" y="183" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13xv37n_di" bpmnElement="Flow_13xv37n">
+        <di:waypoint x="1930" y="241" />
+        <di:waypoint x="1930" y="320" />
+        <di:waypoint x="2022" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0qdl68i_di" bpmnElement="Association_0qdl68i">
+        <di:waypoint x="1760" y="241" />
+        <di:waypoint x="1760" y="293" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Gateway_13lm28y_di" bpmnElement="Gateway_13lm28y" isMarkerVisible="true">
+        <dc:Bounds x="2195" y="232" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1c6xfzg_di" bpmnElement="OtpResultGateway">
+        <dc:Bounds x="975" y="232" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_03n7ih9_di" bpmnElement="OtpReceived">
+        <dc:Bounds x="1112" y="239" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1100" y="282" width="66" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ufbdo8_di" bpmnElement="OtpTimer">
+        <dc:Bounds x="982" y="362" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="885" y="370" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0izki6o_di" bpmnElement="Gateway_0izki6o" isMarkerVisible="true">
+        <dc:Bounds x="1225" y="232" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10lrgpm_di" bpmnElement="HandlingOtpFailure">
+        <dc:Bounds x="1370" y="340" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_08swk8g" bpmnElement="Activity_0gq3kmo">
+        <dc:Bounds x="790" y="217" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ika72a_di" bpmnElement="Event_0ika72a">
+        <dc:Bounds x="2022" y="412" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_19sjs7y_di" bpmnElement="Event_19sjs7y">
+        <dc:Bounds x="652" y="279" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1e91foj_di" bpmnElement="Event_1e91foj">
+        <dc:Bounds x="312" y="279" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0t36rkq_di" bpmnElement="Flow_0t36rkq">
+        <di:waypoint x="215" y="257" />
+        <di:waypoint x="280" y="257" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mmubyk_di" bpmnElement="Flow_1mmubyk">
+        <di:waypoint x="330" y="315" />
+        <di:waypoint x="330" y="500" />
+        <di:waypoint x="2195" y="500" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="333" y="391" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_074ffsz_di" bpmnElement="Flow_074ffsz">
+        <di:waypoint x="380" y="257" />
+        <di:waypoint x="450" y="257" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08gqyck_di" bpmnElement="Flow_08gqyck">
+        <di:waypoint x="550" y="257" />
+        <di:waypoint x="620" y="257" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bntgpy_di" bpmnElement="Flow_0bntgpy">
+        <di:waypoint x="670" y="315" />
+        <di:waypoint x="670" y="500" />
+        <di:waypoint x="2195" y="500" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="672" y="391" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1076l1x_di" bpmnElement="Flow_1076l1x">
+        <di:waypoint x="2245" y="500" />
+        <di:waypoint x="2340" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vo1ayo_di" bpmnElement="Flow_1vo1ayo">
+        <di:waypoint x="2440" y="500" />
+        <di:waypoint x="2532" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1891o73_di" bpmnElement="Flow_1891o73">
+        <di:waypoint x="720" y="257" />
+        <di:waypoint x="790" y="257" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cqvce9_di" bpmnElement="Flow_0cqvce9">
+        <di:waypoint x="2440" y="257" />
+        <di:waypoint x="2532" y="257" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04sva2j_di" bpmnElement="Flow_04sva2j">
+        <di:waypoint x="2245" y="257" />
+        <di:waypoint x="2340" y="257" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2251" y="226" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1g4vi0x_di" bpmnElement="Flow_1g4vi0x">
+        <di:waypoint x="2220" y="282" />
+        <di:waypoint x="2220" y="475" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2223" y="346" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nwcelo_di" bpmnElement="Flow_1nwcelo">
+        <di:waypoint x="2130" y="257" />
+        <di:waypoint x="2195" y="257" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ddmpfm_di" bpmnElement="Flow_0ddmpfm">
+        <di:waypoint x="1275" y="257" />
+        <di:waypoint x="1530" y="257" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1361" y="243" width="69" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xj908d_di" bpmnElement="Flow_1xj908d">
+        <di:waypoint x="890" y="257" />
+        <di:waypoint x="975" y="257" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11re9jo_di" bpmnElement="Flow_11re9jo">
+        <di:waypoint x="1025" y="257" />
+        <di:waypoint x="1112" y="257" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_017747h_di" bpmnElement="Flow_017747h">
+        <di:waypoint x="1000" y="282" />
+        <di:waypoint x="1000" y="362" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1cpsc7e_di" bpmnElement="Flow_1cpsc7e">
+        <di:waypoint x="1148" y="257" />
+        <di:waypoint x="1225" y="257" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07ip8cp_di" bpmnElement="Flow_07ip8cp">
+        <di:waypoint x="1018" y="380" />
+        <di:waypoint x="1370" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1awib1x_di" bpmnElement="Flow_1awib1x">
+        <di:waypoint x="1250" y="282" />
+        <di:waypoint x="1250" y="380" />
+        <di:waypoint x="1370" y="380" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1258" y="317" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03jtwp8_di" bpmnElement="Flow_03jtwp8">
+        <di:waypoint x="1420" y="420" />
+        <di:waypoint x="1420" y="500" />
+        <di:waypoint x="2195" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05xrh0b_di" bpmnElement="Flow_05xrh0b">
+        <di:waypoint x="2040" y="448" />
+        <di:waypoint x="2040" y="500" />
+        <di:waypoint x="2195" y="500" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

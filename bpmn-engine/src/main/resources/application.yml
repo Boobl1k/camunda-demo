@@ -1,0 +1,86 @@
+spring:
+  application:
+    name: camunda-demo
+  docker:
+    compose:
+      enabled: false
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+  flyway:
+    enabled: true
+    locations: db/migration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties.spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+      properties.spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.ByteArrayDeserializer
+    properties:
+      spring.json.trusted.packages: '*'
+      acks: all
+      security:
+        protocol: PLAINTEXT
+
+springwolf:
+  docket:
+    base-package: com.example.camunda.demo.bpmn.engine.kafka.listener
+    info:
+      title: ${spring.application.name}
+      version: 1.0.0
+      description: Camunda POC async api
+    servers:
+      kafka:
+        protocol: kafka
+        host: ${KAFKA_BOOTSTRAP_SERVERS}
+  plugin:
+    kafka:
+      publishing:
+        enabled: false
+        producer:
+          bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+          value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+          properties:
+            spring.json.add.type.headers: false
+            acks: all
+            security:
+              protocol: PLAINTEXT
+      scanner:
+        kafka-listener:
+          enabled: false
+
+camunda:
+  bpm:
+    default-serialization-format: application/json
+    admin-user:
+      id: ${CAMUNDA_USER}
+      password: ${CAMUNDA_PASSWORD}
+    generic-properties:
+      properties:
+        compositeIncidentHandlersEnabled: true
+        enforceHistoryTimeToLive: false
+
+app:
+  excamad:
+    enabled: false
+  account:
+    client:
+      url: ${ACCOUNT_URL}
+  otp:
+    client:
+      # used in BPMN
+      url: ${OTP_URL}
+    result-consumer:
+      topic: ${OTP_RESULT_TOPIC}
+      group-id: otp-result-local
+
+mock:
+  otp:
+    result-producer:
+      topic: ${OTP_RESULT_TOPIC}

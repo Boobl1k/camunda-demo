@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:16
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=camunda-demo
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+
+  excamad:
+    image: kotovdenis/excamad:142
+    ports:
+      - "8081:8080"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.7.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka_network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.7.0
+    depends_on:
+      - zookeeper
+    restart: on-failure
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    networks:
+      - kafka_network
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: EXTERNAL:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: EXTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    ports:
+      - "8090:8080"
+    depends_on:
+      - kafka
+    networks:
+      - kafka_network
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+      KAFKA_CLUSTERS_0_NAME: kafka
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+
+networks:
+  kafka_network:
+    driver: bridge

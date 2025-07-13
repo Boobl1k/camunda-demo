@@ -1,0 +1,17 @@
+spring:
+  docker:
+    compose:
+      enabled: true
+      file: docker-compose-local.yml
+      lifecycle-management: start_only
+
+app:
+  excamad:
+    enabled: true
+
+CAMUNDA_USER: admin
+CAMUNDA_PASSWORD: admin
+KAFKA_BOOTSTRAP_SERVERS: localhost:9092
+OTP_URL: http://localhost:8080
+OTP_RESULT_TOPIC: otp-result
+ACCOUNT_URL: http://localhost:8082

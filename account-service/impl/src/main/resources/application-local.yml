@@ -1,0 +1,11 @@
+spring:
+  docker:
+    compose:
+      enabled: true
+      file: docker-compose-local.yml
+      lifecycle-management: start_only
+
+server:
+  port: 8082
+
+KAFKA_BOOTSTRAP_SERVERS: localhost:9092
